@@ -6,7 +6,8 @@
 //
 
 
-import CoreData
+//import CoreData
+import Foundation
 
 protocol NoteListInteractorOutput: AnyObject {
     
@@ -18,11 +19,12 @@ protocol NoteListInteractor: AnyObject {
 
 struct NoteViewModel {
     let title: String
+    let description: String
     let completed: Bool
     let dateString: String
 }
 
-struct Note {
+struct NoteModel {
     let id: Int
     let completed: Bool
     let title: String
@@ -43,31 +45,53 @@ final class NoteListInteractorImpl: NoteListInteractor {
         self.coreDataManager = coreDataManager
     }
     
-    func getNotes() -> [Note] {
-       return getNotesFromStorage()
+    func getNotes(completion: @escaping (Result<[NoteModel], RequestError>) -> Void) {
+        if isFirstLaunch {
+            getNotesFromNetwork(completion: completion)
+        } else {
+            getNotesFromStorage(completion: completion)
+        }
     }
     
-    private func getNotesFromStorage() -> [Note] {
+    private func getNotesFromStorage(completion: @escaping (Result<[NoteModel], RequestError>) -> Void) {
         do {
             let fetchRequest = DBNote.fetchRequest()
 
             let models = try coreDataManager.read(fetchReuqest: fetchRequest, mapClosure: {
-                return Note(id: Int($0.id), completed: $0.completed, title: $0.title, date: $0.date)
+                return NoteModel(id: Int($0.id), completed: $0.completed, title: $0.title, date: $0.date)
             })
 
-            return models
+            completion(.success(models))
         } catch {
-            print("Fetch treatments models error: \(error)")
+            print("Fetch models error: \(error)")
+            completion(.failure(.dataBase))
         }
-
-        return []
     }
     
-    private func getNotesFromNetwork() {
+    private func getNotesFromNetwork(completion: @escaping (Result<[NoteModel], RequestError>) -> Void) {
         let notesRequest = NoteListRequest()
-        
-        let notes: [Note] = networkService.sendRequest(request: notesRequest) { <#Result<Decodable, RequestError>#> in
-            <#code#>
+                
+        networkService.sendRequest(type: NoteListApiModel.self, request: notesRequest) { result in
+            switch result {
+            case .success(let apiModel):
+                let noteModels = self.mapNoteModels(apiModel: apiModel)
+                completion(.success(noteModels))
+            case .failure(let requestError):
+                completion(.failure(requestError))
+            }
         }
+    }
+    
+    private func mapNoteModels(apiModel: NoteListApiModel) -> [NoteModel] {
+        let result: [NoteModel] = apiModel.todos.map { apiModel in
+            return NoteModel(
+                id: apiModel.id,
+                completed: apiModel.completed,
+                title: apiModel.todo,
+                date: Date()
+            )
+        }
+        
+        return result
     }
 }

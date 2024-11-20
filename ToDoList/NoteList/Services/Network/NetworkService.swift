@@ -9,6 +9,7 @@ import Foundation
 
 protocol NetworkService: AnyObject {
     func sendRequest<RequestModel: Decodable>(
+        type: RequestModel.Type,
         request: Request,
         completion: @escaping (Result<RequestModel, RequestError>) -> (Void)
     )
@@ -26,6 +27,7 @@ final class NetworkServiceImpl: NetworkService {
     }
     
     func sendRequest<RequestModel: Decodable>(
+        type: RequestModel.Type,
         request: Request,
         completion: @escaping (Result<RequestModel, RequestError>) -> (Void)
     ) {

@@ -11,6 +11,7 @@ enum RequestError: Error {
     case wrongStatusCode
     case download
     case parse
+    case dataBase
     
     var description: String {
         switch self {
@@ -20,6 +21,8 @@ enum RequestError: Error {
             return "Parse fail"
         case .wrongStatusCode:
             return "Wrong status code"
+        case .dataBase:
+            return "Fetch models error"
         }
     }
 }
