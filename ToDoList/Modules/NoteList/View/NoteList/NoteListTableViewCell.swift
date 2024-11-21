@@ -48,10 +48,10 @@ final class NoteListTableViewCell: UITableViewCell {
     private func configureCheckmarkButton(completed: Bool) {
         if completed {
             checkmarkButton.setImage(UIImage(systemName: "checkmark.circle"), for: .normal)
-            checkmarkButton.backgroundColor = Color.accent
+            checkmarkButton.tintColor = Color.accent
         } else {
             checkmarkButton.setImage(UIImage(systemName: "circle"), for: .normal)
-            checkmarkButton.backgroundColor = Color.stroke
+            checkmarkButton.tintColor = Color.stroke
         }
     }
 
@@ -68,27 +68,29 @@ final class NoteListTableViewCell: UITableViewCell {
     
     private func addConstraints() {
         checkmarkButton.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.leading.equalToSuperview()
+            make.top.equalToSuperview().offset(Constants.verticalSpacing)
+            make.leading.equalToSuperview().offset(Constants.horizontalMargin)
+            make.height.equalTo(checkmarkButton.snp.width)
+            make.height.equalTo(Constants.iconHeight)
         }
         
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview()
+            make.top.equalTo(checkmarkButton.snp.top)
             make.leading.equalTo(checkmarkButton.snp.trailing).offset(Constants.horizontalSpacing)
-            make.trailing.equalToSuperview()
+            make.trailing.equalToSuperview().inset(Constants.horizontalMargin)
         }
         
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(Constants.smallVerticalSpacing)
             make.leading.equalTo(titleLabel.snp.leading)
-            make.trailing.equalToSuperview()
+            make.trailing.equalToSuperview().inset(Constants.horizontalMargin)
         }
         
         dateLabel.snp.makeConstraints { make in
             make.top.equalTo(descriptionLabel.snp.bottom).offset(Constants.smallVerticalSpacing)
             make.leading.equalTo(titleLabel.snp.leading)
-            make.trailing.equalToSuperview()
-            make.bottom.equalToSuperview()
+            make.trailing.equalToSuperview().inset(Constants.horizontalMargin)
+            make.bottom.equalToSuperview().inset(Constants.verticalSpacing)
         }
     }
     
@@ -99,14 +101,16 @@ final class NoteListTableViewCell: UITableViewCell {
         descriptionLabel.textColor = .label
         descriptionLabel.font = .systemFont(ofSize: 16)
         
-        descriptionLabel.textColor = Color.stroke
-        descriptionLabel.font = .systemFont(ofSize: 16)
+        dateLabel.textColor = Color.stroke
+        dateLabel.font = .systemFont(ofSize: 16)
     }
 }
 
 private enum Constants {
     static let smallVerticalSpacing: CGFloat = 6
-//    static let verticalSpacing: CGFloat = 16
+    static let verticalSpacing: CGFloat = 12
     
     static let horizontalSpacing: CGFloat = 8
+    static let iconHeight: CGFloat = 24
+    static let horizontalMargin: CGFloat = 20
 }

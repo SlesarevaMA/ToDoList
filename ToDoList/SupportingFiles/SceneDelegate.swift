@@ -10,6 +10,8 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    
+    private var router: Router?
 
     func scene(
         _ scene: UIScene,
@@ -21,24 +23,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
         
-        let jsonDecoder = JSONDecoder()
-        let networkService: NetworkService = NetworkServiceImpl(jsonDecoder: jsonDecoder)
-        let coreDataManager: CoreDataManager = CoreDataManagerImpl()
-
-        let noteListInteractor: NoteListInteractor = NoteListInteractorImpl(
-            networkService: networkService,
-            coreDataManager: coreDataManager
-        )
+        let assembly = Assembly()
         
-        let noteListPresenter: NoteListViewOutput = NoteListPresenter(interactor: noteListInteractor)
-        let noteListViewController = NoteListViewController(noteListViewOutput: noteListPresenter)
+        let navigationController = UINavigationController()
+        navigationController.setNavigationBarHidden(true, animated: false)
         
-        noteListPresenter.view = noteListViewController
-        
+        router = RouterImpl(navigationController: navigationController, assembly: assembly)
         
         window = UIWindow(windowScene: windowScene)
         
-        window?.rootViewController = noteListViewController
+        window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
+        
+        router?.showNoteList()
     }
 }

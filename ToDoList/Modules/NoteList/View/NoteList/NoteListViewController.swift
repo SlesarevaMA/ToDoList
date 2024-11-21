@@ -13,7 +13,7 @@ protocol NoteListViewInput: AnyObject {
 }
 
 final class NoteListViewController: UIViewController, NoteListViewInput {
-    private let noteListViewOutput: NoteListViewOutput
+    private let output: NoteListViewOutput
     
     private let titleLabel = UILabel()
     private let tableView = UITableView()
@@ -21,7 +21,7 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
     private var noteListModels = [NoteListViewModel]()
     
     init(noteListViewOutput: NoteListViewOutput) {
-        self.noteListViewOutput = noteListViewOutput
+        self.output = noteListViewOutput
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -33,7 +33,7 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        noteListViewOutput.viewDidLoad()
+        output.viewDidLoad()
         setup()
     }
     
@@ -65,7 +65,7 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
         tableView.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom)
             make.bottom.equalToSuperview()
-            make.horizontalEdges.equalToSuperview().inset(Constants.horizontalMargin)
+            make.horizontalEdges.equalToSuperview()
         }
     }
     
@@ -73,14 +73,14 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(cell: NoteListTableViewCell.self)
-        tableView.backgroundColor = .red //.systemBackground
+        tableView.backgroundColor = .systemBackground
     }
     
     private func configureViews() {
         view.backgroundColor = .systemBackground
         
         titleLabel.textColor = .label
-        titleLabel.font = .systemFont(ofSize: 34)
+        titleLabel.font = .boldSystemFont(ofSize: 34)
         titleLabel.text = "Задачи"
     }
 }
@@ -101,7 +101,12 @@ extension NoteListViewController: UITableViewDataSource {
 }
 
 extension NoteListViewController: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        let model = noteListModels[indexPath.row]
+        output.cellDidTap(model: model)
+    }
 }
 
 private enum Constants {

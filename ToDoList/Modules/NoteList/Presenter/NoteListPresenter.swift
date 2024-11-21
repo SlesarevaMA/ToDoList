@@ -16,6 +16,7 @@ protocol NoteListInteractorOutput: AnyObject {
 protocol NoteListViewOutput: AnyObject {
     var view: NoteListViewInput? { get set }
     func viewDidLoad()
+    func cellDidTap(model: NoteListViewModel)
 }
 
 final class NoteListPresenter: NoteListViewOutput {
@@ -44,6 +45,10 @@ final class NoteListPresenter: NoteListViewOutput {
                 print(failure)
             }
         }
+    }
+    
+    func cellDidTap(model: NoteListViewModel) {
+        
     }
     
     private func mapNoteListViewModels(_ models: [NoteModel]) -> [NoteListViewModel] {
