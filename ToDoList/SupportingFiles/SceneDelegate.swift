@@ -26,7 +26,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let assembly = Assembly()
         
         let navigationController = UINavigationController()
-        navigationController.setNavigationBarHidden(true, animated: false)
         
         router = RouterImpl(navigationController: navigationController, assembly: assembly)
         

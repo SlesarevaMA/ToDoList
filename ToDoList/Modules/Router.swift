@@ -9,11 +9,10 @@ import UIKit
 
 protocol Router: AnyObject {
     func showNoteList()
-    func showNote()
+    func showNote(model: NoteViewModel)
 }
 
 final class RouterImpl: Router {
-    
     private let navigationController: UINavigationController
     private let assembly: Assembly
     
@@ -32,11 +31,17 @@ final class RouterImpl: Router {
         let noteListViewController = NoteListViewController(noteListViewOutput: noteListPresenter)
         
         noteListPresenter.view = noteListViewController
+        noteListPresenter.router = self
         
+        navigationController.setNavigationBarHidden(true, animated: false)
         navigationController.setViewControllers([noteListViewController], animated: false)
     }
     
-    func showNote() {
+    func showNote(model: NoteViewModel) {
+        let noteViewController = NoteViewController()
+        noteViewController.configure(with: model)
         
+        navigationController.setNavigationBarHidden(false, animated: false)
+        navigationController.pushViewController(noteViewController, animated: true)
     }
 }
