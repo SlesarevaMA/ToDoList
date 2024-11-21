@@ -12,7 +12,7 @@ struct NoteListRequest: Request {
         var urlComponents = URLComponents()
         urlComponents.scheme = "https"
         urlComponents.host = "dummyjson.com"
-        urlComponents.path = "todos"
+        urlComponents.path = "/todos"
         
         guard let url = urlComponents.url else {
             fatalError("not valid url")

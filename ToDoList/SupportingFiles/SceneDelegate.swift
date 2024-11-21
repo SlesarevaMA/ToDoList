@@ -20,9 +20,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else {
             return
         }
+        
+        let jsonDecoder = JSONDecoder()
+        let networkService: NetworkService = NetworkServiceImpl(jsonDecoder: jsonDecoder)
+        let coreDataManager: CoreDataManager = CoreDataManagerImpl()
 
+        let noteListInteractor: NoteListInteractor = NoteListInteractorImpl(
+            networkService: networkService,
+            coreDataManager: coreDataManager
+        )
+        
+        let noteListPresenter: NoteListViewOutput = NoteListPresenter(interactor: noteListInteractor)
+        let noteListViewController = NoteListViewController(noteListViewOutput: noteListPresenter)
+        
+        noteListPresenter.view = noteListViewController
+        
+        
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = NoteListViewController()
+        
+        window?.rootViewController = noteListViewController
         window?.makeKeyAndVisible()
     }
 }

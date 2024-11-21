@@ -6,29 +6,11 @@
 //
 
 
-//import CoreData
 import Foundation
 
-protocol NoteListInteractorOutput: AnyObject {
-    
-}
 
 protocol NoteListInteractor: AnyObject {
-    
-}
-
-struct NoteViewModel {
-    let title: String
-    let description: String
-    let completed: Bool
-    let dateString: String
-}
-
-struct NoteModel {
-    let id: Int
-    let completed: Bool
-    let title: String
-    let date: Date
+    func getNotes(completion: @escaping (Result<[NoteModel], RequestError>) -> Void)
 }
 
 final class NoteListInteractorImpl: NoteListInteractor {
@@ -38,7 +20,7 @@ final class NoteListInteractorImpl: NoteListInteractor {
     private let networkService: NetworkService
     private let coreDataManager: CoreDataManager
     
-    private var isFirstLaunch = false
+    private var isFirstLaunch = true
     
     init(networkService: NetworkService, coreDataManager: CoreDataManager) {
         self.networkService = networkService
@@ -57,8 +39,16 @@ final class NoteListInteractorImpl: NoteListInteractor {
         do {
             let fetchRequest = DBNote.fetchRequest()
 
-            let models = try coreDataManager.read(fetchReuqest: fetchRequest, mapClosure: {
-                return NoteModel(id: Int($0.id), completed: $0.completed, title: $0.title, date: $0.date)
+            let models = try coreDataManager.read(
+                fetchReuqest: fetchRequest,
+                mapClosure: {
+                    return NoteModel(
+                        id: Int($0.id),
+                        completed: $0.completed,
+                        title: $0.title,
+                        description: $0.body,
+                        date: $0.date
+                    )
             })
 
             completion(.success(models))
@@ -88,6 +78,7 @@ final class NoteListInteractorImpl: NoteListInteractor {
                 id: apiModel.id,
                 completed: apiModel.completed,
                 title: apiModel.todo,
+                description: "",
                 date: Date()
             )
         }

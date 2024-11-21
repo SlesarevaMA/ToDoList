@@ -17,6 +17,7 @@ extension DBNote {
     }
 
     @NSManaged public var title: String
+    @NSManaged public var body: String
     @NSManaged public var completed: Bool
     @NSManaged public var id: Int64
     @NSManaged public var date: Date
