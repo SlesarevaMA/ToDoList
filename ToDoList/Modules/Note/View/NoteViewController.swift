@@ -41,6 +41,16 @@ final class NoteViewController: UIViewController {
         addConstraints()
         configureViews()
         configureNavigationBar()
+        
+        navigationItem.backButtonDisplayMode = .minimal
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if let modelId {
+            output.viewDidDisappear(id: modelId, title: titleTextView.text, description: descriptionTextView.text)
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -55,7 +65,7 @@ final class NoteViewController: UIViewController {
         titleTextView.text = model.title
         dateLabel.text = model.dateString
         descriptionTextView.text = model.description
-        
+                
         modelId = model.id
     }
     
@@ -86,13 +96,16 @@ final class NoteViewController: UIViewController {
         
         descriptionTextView.snp.makeConstraints { make in
             make.top.equalTo(dateLabel.snp.bottom).offset(Constants.verticalSpacing)
+//            make.horizontalEdges.equalToSuperview().inset(Constants.horizontalMargin)
             make.horizontalEdges.equalTo(titleTextView.snp.horizontalEdges)
-            make.bottom.equalToSuperview()
+//            make.bottom.equalToSuperview()
+            make.height.greaterThanOrEqualTo(50)
         }
     }
     
     private func configureViews() {
         view.backgroundColor = .systemBackground
+//        navigationItem.backButtonDisplayMode = .minimal
         
         titleTextView.textColor = .label
         titleTextView.font = .boldSystemFont(ofSize: 34)

@@ -38,7 +38,11 @@ final class RouterImpl: Router {
     }
     
     func showNote(model: NoteViewModel) {
-        let noteInteractor: NoteInteractor = NoteInteractorImpl(coreDataManager: assembly.coreDataManager)
+        let noteInteractor: NoteInteractor = NoteInteractorImpl(
+            coreDataManager: assembly.coreDataManager,
+            userDefaults: assembly.userDefaults
+        )
+        
         let notePresenter: NoteViewOutput = NotePresenter(interactor: noteInteractor)
         let noteViewController = NoteViewController(output: notePresenter)
         noteViewController.configure(with: model)

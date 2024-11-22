@@ -11,6 +11,7 @@ import Foundation
 
 protocol NoteListInteractor: AnyObject {
     func getNotes(completion: @escaping (Result<[NoteModel], RequestError>) -> Void)
+    func getLastId() -> Int
 }
 
 final class NoteListInteractorImpl: NoteListInteractor {
@@ -38,8 +39,11 @@ final class NoteListInteractorImpl: NoteListInteractor {
         userDefaults.set(true, forKey: "isFirstLaunch")
     }
     
-    func getLastId() {
-        userDefaults.integer(forKey: "LastId")
+    func getLastId() -> Int {
+        let lastId = userDefaults.integer(forKey: "LastId")
+        userDefaults.set(lastId + 1, forKey: "LastId")
+        
+        return lastId
     }
     
     private func getNotesFromStorage(completion: @escaping (Result<[NoteModel], RequestError>) -> Void) {
@@ -72,7 +76,15 @@ final class NoteListInteractorImpl: NoteListInteractor {
             switch result {
             case .success(let apiModel):
                 let noteModels = self.mapNoteModels(apiModel: apiModel)
+                
+                let lastModel = noteModels.max { $0.id < $1.id }
+                
+                if let maxId = lastModel?.id {
+                    self.userDefaults.set(maxId, forKey: "LastId")
+                }
+                
                 self.saveToStorage(noteModels: noteModels)
+                
                 completion(.success(noteModels))
             case .failure(let requestError):
                 completion(.failure(requestError))

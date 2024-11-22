@@ -19,6 +19,7 @@ protocol NoteListViewOutput: AnyObject {
     
     func viewWillAppear()
     func cellDidTap(model: NoteListViewModel)
+    func rightBarButtonItemTapped()
 }
 
 final class NoteListPresenter: NoteListViewOutput {
@@ -51,7 +52,10 @@ final class NoteListPresenter: NoteListViewOutput {
     }
     
     func rightBarButtonItemTapped() {
-//        router?.showNote(model: NoteViewModel)
+        let lastId = interactor.getLastId()
+        let dateString = Date().formatted(date: .abbreviated, time: .omitted)
+        let emptyNoteViewModel = NoteViewModel(id: lastId + 1, title: "", dateString: dateString, description: "")
+        router?.showNote(model: emptyNoteViewModel)
     }
         
     func cellDidTap(model: NoteListViewModel) {

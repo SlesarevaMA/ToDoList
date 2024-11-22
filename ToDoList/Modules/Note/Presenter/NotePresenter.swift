@@ -20,6 +20,8 @@ final class NotePresenter: NoteViewOutput {
     }
     
     func viewDidDisappear(id: Int, title: String, description: String) {
-        interactor.saveChanges(for: id, changes: (title: title, description: description))
+        DispatchQueue.main.async {
+            self.interactor.saveChanges(for: id, changes: (title: title, description: description))
+        }
     }
 }

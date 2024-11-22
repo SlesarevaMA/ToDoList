@@ -40,11 +40,24 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
         super.viewWillAppear(animated)
         
         output.viewWillAppear()
+        navigationItem.title = "Avatar"
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        navigationItem.title = nil
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
     }
     
     func addNotes(models: [NoteListViewModel]) {
         noteListModels = models
         
+        congigureToolBar()
         tableView.reloadData()
     }
     
@@ -82,9 +95,16 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
     }
     
     private func configureViews() {
-//        navigationItem.title = "Avatar"
-//        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.prefersLargeTitles = true
         
+        view.backgroundColor = .systemBackground//.systemGray6
+        
+        titleLabel.textColor = .label
+        titleLabel.font = .boldSystemFont(ofSize: 34)
+        titleLabel.text = "Задачи"
+    }
+    
+    private func congigureToolBar() {
         let rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "square.and.pencil"),
             style: .plain,
@@ -100,33 +120,15 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
             target: nil,
             action: nil
         )
-                
-        toolbarItems = [
-            UIBarButtonItem(systemItem: .flexibleSpace),
-            UIBarButtonItem(systemItem: .flexibleSpace),
-            UIBarButtonItem(systemItem: .flexibleSpace),
-            UIBarButtonItem(systemItem: .flexibleSpace),
-            UIBarButtonItem(systemItem: .flexibleSpace),
-            centerBarButtonItem,
-            UIBarButtonItem(systemItem: .flexibleSpace),
-            UIBarButtonItem(systemItem: .flexibleSpace),
-            UIBarButtonItem(systemItem: .flexibleSpace),
-            rightBarButtonItem,
-            UIBarButtonItem(systemItem: .flexibleSpace),
-        ]
-
-        navigationController?.setToolbarHidden(false, animated: false)
+        
         navigationController?.toolbar.backgroundColor = .systemGray6
-        
-        view.backgroundColor = .systemGray6
-        
-        titleLabel.textColor = .label
-        titleLabel.font = .boldSystemFont(ofSize: 34)
-        titleLabel.text = "Задачи"
+        navigationController?.toolbar.tintColor = Color.accent
+        navigationController?.setToolbarHidden(false, animated: false)
+        setToolbarItems([.flexibleSpace(), centerBarButtonItem,.flexibleSpace(), rightBarButtonItem], animated: false)
     }
     
-    @objc func rightBarButtonItemTapped() {
-        
+    @objc private func rightBarButtonItemTapped() {
+        output.rightBarButtonItemTapped()
     }
 }
 
