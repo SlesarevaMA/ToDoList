@@ -12,6 +12,7 @@ final class Assembly {
     
     lazy var networkService: NetworkService = NetworkServiceImpl(jsonDecoder: jsonDecoder)
     let coreDataManager: CoreDataManager = CoreDataManagerImpl()
+    let userDefaults = UserDefaults.standard
 
     private let jsonDecoder = JSONDecoder()
 }

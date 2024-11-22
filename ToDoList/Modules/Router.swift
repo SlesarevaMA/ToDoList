@@ -24,7 +24,8 @@ final class RouterImpl: Router {
     func showNoteList() {
         let noteListInteractor: NoteListInteractor = NoteListInteractorImpl(
             networkService: assembly.networkService,
-            coreDataManager: assembly.coreDataManager
+            coreDataManager: assembly.coreDataManager,
+            userDefaults: assembly.userDefaults
         )
         
         let noteListPresenter: NoteListViewOutput = NoteListPresenter(interactor: noteListInteractor)
@@ -33,15 +34,15 @@ final class RouterImpl: Router {
         noteListPresenter.view = noteListViewController
         noteListPresenter.router = self
         
-        navigationController.setNavigationBarHidden(true, animated: false)
         navigationController.setViewControllers([noteListViewController], animated: false)
     }
     
     func showNote(model: NoteViewModel) {
-        let noteViewController = NoteViewController()
+        let noteInteractor: NoteInteractor = NoteInteractorImpl(coreDataManager: assembly.coreDataManager)
+        let notePresenter: NoteViewOutput = NotePresenter(interactor: noteInteractor)
+        let noteViewController = NoteViewController(output: notePresenter)
         noteViewController.configure(with: model)
         
-        navigationController.setNavigationBarHidden(false, animated: false)
         navigationController.pushViewController(noteViewController, animated: true)
     }
 }

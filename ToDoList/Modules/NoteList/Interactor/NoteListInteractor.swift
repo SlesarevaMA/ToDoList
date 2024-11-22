@@ -14,25 +14,32 @@ protocol NoteListInteractor: AnyObject {
 }
 
 final class NoteListInteractorImpl: NoteListInteractor {
-    
     weak var output: NoteListInteractorOutput?
     
     private let networkService: NetworkService
     private let coreDataManager: CoreDataManager
-    
-    private var isFirstLaunch = true
-    
-    init(networkService: NetworkService, coreDataManager: CoreDataManager) {
+    private let userDefaults: UserDefaults
+            
+    init(networkService: NetworkService, coreDataManager: CoreDataManager, userDefaults: UserDefaults) {
         self.networkService = networkService
         self.coreDataManager = coreDataManager
+        self.userDefaults = userDefaults
     }
     
     func getNotes(completion: @escaping (Result<[NoteModel], RequestError>) -> Void) {
-        if isFirstLaunch {
-            getNotesFromNetwork(completion: completion)
-        } else {
+        let isNotFirstLaunch = userDefaults.bool(forKey: "isFirstLaunch")
+
+        if isNotFirstLaunch {
             getNotesFromStorage(completion: completion)
+        } else {
+            getNotesFromNetwork(completion: completion)
         }
+        
+        userDefaults.set(true, forKey: "isFirstLaunch")
+    }
+    
+    func getLastId() {
+        userDefaults.integer(forKey: "LastId")
     }
     
     private func getNotesFromStorage(completion: @escaping (Result<[NoteModel], RequestError>) -> Void) {
@@ -65,6 +72,7 @@ final class NoteListInteractorImpl: NoteListInteractor {
             switch result {
             case .success(let apiModel):
                 let noteModels = self.mapNoteModels(apiModel: apiModel)
+                self.saveToStorage(noteModels: noteModels)
                 completion(.success(noteModels))
             case .failure(let requestError):
                 completion(.failure(requestError))
@@ -84,5 +92,24 @@ final class NoteListInteractorImpl: NoteListInteractor {
         }
         
         return result
+    }
+    
+    private func saveToStorage(noteModels: [NoteModel]) {
+        do {
+            try coreDataManager.save { context in
+                context.performAndWait {
+                    for model in noteModels {
+                        let note = DBNote(context: context)
+                        note.id = Int64(model.id)
+                        note.title = model.title
+                        note.body = model.description
+                        note.date = model.date
+                        note.completed = model.completed
+                    }
+                }
+            }
+        } catch {
+            print("Save notes error \(error)")
+        }
     }
 }

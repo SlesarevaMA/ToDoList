@@ -27,6 +27,8 @@ final class CoreDataManagerImpl: CoreDataManager {
             if let error {
                 print("Load persistant store error: \(error.localizedDescription)")
             }
+            
+            print("Database location: \(description.url?.absoluteString ?? "")")
         }
 
         let context = container.newBackgroundContext()

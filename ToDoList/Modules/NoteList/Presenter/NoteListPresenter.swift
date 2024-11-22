@@ -17,7 +17,7 @@ protocol NoteListViewOutput: AnyObject {
     var view: NoteListViewInput? { get set }
     var router: Router? { get set }
     
-    func viewDidLoad()
+    func viewWillAppear()
     func cellDidTap(model: NoteListViewModel)
 }
 
@@ -31,7 +31,7 @@ final class NoteListPresenter: NoteListViewOutput {
         self.interactor = interactor
     }
     
-    func viewDidLoad() {
+    func viewWillAppear() {
         interactor.getNotes { [weak self] result in
             guard let self else {
                 return
@@ -50,6 +50,10 @@ final class NoteListPresenter: NoteListViewOutput {
         }
     }
     
+    func rightBarButtonItemTapped() {
+//        router?.showNote(model: NoteViewModel)
+    }
+        
     func cellDidTap(model: NoteListViewModel) {
         let noteViewModel = mapNoteViewModel(noteListViewModel: model)
         
