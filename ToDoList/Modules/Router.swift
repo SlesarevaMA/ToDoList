@@ -9,7 +9,7 @@ import UIKit
 
 protocol Router: AnyObject {
     func showNoteList()
-    func showNote(id: Int?)
+    func showNote(id: UUID?)
 }
 
 final class RouterImpl: Router {
@@ -22,7 +22,7 @@ final class RouterImpl: Router {
     }
     
     func showNoteList() {
-        let noteListInteractor: NoteListInteractor = NoteListInteractorImpl(
+        let noteListInteractor = NoteListInteractorImpl(
             networkService: assembly.networkService,
             coreDataManager: assembly.coreDataManager,
             userDefaults: assembly.userDefaults
@@ -37,11 +37,8 @@ final class RouterImpl: Router {
         navigationController.setViewControllers([noteListViewController], animated: false)
     }
     
-    func showNote(id: Int?) {
-        let noteInteractor: NoteInteractor = NoteInteractorImpl(
-            coreDataManager: assembly.coreDataManager,
-            userDefaults: assembly.userDefaults
-        )
+    func showNote(id: UUID?) {
+        let noteInteractor = NoteInteractorImpl(coreDataManager: assembly.coreDataManager)
         
         let notePresenter = NotePresenter(interactor: noteInteractor)
         notePresenter.setModelId(id)

@@ -46,7 +46,7 @@ final class NoteListInteractorImpl: NoteListInteractor {
                 fetchReuqest: fetchRequest,
                 mapClosure: {
                     return NoteModel(
-                        id: Int($0.id),
+                        id: $0.id,
                         completed: $0.completed,
                         title: $0.title,
                         description: $0.body,
@@ -68,14 +68,6 @@ final class NoteListInteractorImpl: NoteListInteractor {
             switch result {
             case .success(let apiModel):
                 let noteModels = self.mapNoteModels(apiModel: apiModel)
-                
-                let lastModel = noteModels.max { $0.id < $1.id }
-                
-                // Убрать
-                if let maxId = lastModel?.id {
-                    self.userDefaults.set(maxId, forKey: "LastId")
-                }
-                
                 self.saveToStorage(noteModels: noteModels)
                 
                 completion(.success(noteModels))
@@ -88,7 +80,7 @@ final class NoteListInteractorImpl: NoteListInteractor {
     private func mapNoteModels(apiModel: NoteListApiModel) -> [NoteModel] {
         let result: [NoteModel] = apiModel.todos.map { apiModel in
             return NoteModel(
-                id: apiModel.id,
+                id: UUID(),
                 completed: apiModel.completed,
                 title: apiModel.todo,
                 description: "",
@@ -105,7 +97,7 @@ final class NoteListInteractorImpl: NoteListInteractor {
                 context.performAndWait {
                     for model in noteModels {
                         let note = DBNote(context: context)
-                        note.id = Int64(model.id)
+                        note.id = model.id
                         note.title = model.title
                         note.body = model.description
                         note.date = model.date

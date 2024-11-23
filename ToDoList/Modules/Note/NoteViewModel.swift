@@ -6,8 +6,10 @@
 //
 
 
+import Foundation
+
+
 struct NoteViewModel {
-    let id: Int
     let title: String
     let dateString: String
     let description: String

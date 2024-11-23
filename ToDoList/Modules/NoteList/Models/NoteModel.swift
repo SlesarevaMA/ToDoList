@@ -9,7 +9,7 @@ import Foundation
 
 
 struct NoteModel {
-    let id: Int
+    let id: UUID
     let completed: Bool
     let title: String
     let description: String

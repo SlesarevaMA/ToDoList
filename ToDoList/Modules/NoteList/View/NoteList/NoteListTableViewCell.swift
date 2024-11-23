@@ -19,7 +19,7 @@ final class NoteListTableViewCell: UITableViewCell {
     private let descriptionLabel = UILabel()
     private let dateLabel = UILabel()
 
-    private var id: Int?
+    private var id: UUID?
     private var completed: Bool?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

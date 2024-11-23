@@ -12,10 +12,9 @@ protocol NoteListInteractorOutput: AnyObject {
     
 }
 
-
-protocol NoteListViewOutput: AnyObject {    
+protocol NoteListViewOutput: AnyObject {
     func viewWillAppear()
-    func didTapCell(id: Int)
+    func didTapCell(id: UUID)
     func rightBarButtonItemTapped()
 }
 
@@ -78,7 +77,7 @@ extension NoteListPresenter: NoteListViewOutput {
         router?.showNote(id: nil)
     }
         
-    func didTapCell(id: Int) {
+    func didTapCell(id: UUID) {
         router?.showNote(id: id)
     }
 }

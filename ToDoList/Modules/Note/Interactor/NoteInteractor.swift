@@ -8,28 +8,26 @@
 import Foundation
 
 protocol NoteInteractor: AnyObject {
-    func saveChanges(for modelId: Int?, title: String, description: String)
-    func fetchNote(from id: Int) -> NoteModel?
+    func saveChanges(for modelId: UUID?, title: String, description: String)
+    func fetchNote(from id: UUID) -> NoteModel?
 }
 
 final class NoteInteractorImpl: NoteInteractor {
     private let coreDataManager: CoreDataManager
-    private let userDefaults: UserDefaults
     
-    init(coreDataManager: CoreDataManager, userDefaults: UserDefaults) {
+    init(coreDataManager: CoreDataManager) {
         self.coreDataManager = coreDataManager
-        self.userDefaults = userDefaults
     }
     
-    func fetchNote(from id: Int) -> NoteModel? {
+    func fetchNote(from id: UUID) -> NoteModel? {
         do {
             let fetchRequest = DBNote.fetchRequest()
-            let predicate = NSPredicate(format: "id == %d", id)
+            let predicate = NSPredicate(format: "id == %@", id as NSUUID)
             fetchRequest.predicate = predicate
             
             let models = try coreDataManager.read(fetchReuqest: fetchRequest) {
                 return NoteModel(
-                    id: Int($0.id),
+                    id: $0.id,
                     completed: $0.completed,
                     title: $0.title,
                     description: $0.body,
@@ -48,21 +46,19 @@ final class NoteInteractorImpl: NoteInteractor {
         }
     }
     
-    func saveChanges(for modelId: Int?, title: String, description: String) {
+    func saveChanges(for modelId: UUID?, title: String, description: String) {
         if let modelId {
             editNote(for: modelId, title: title, description: description)
         } else {
-            let lastId = userDefaults.integer(forKey: "LastId")
-            userDefaults.set(lastId + 1, forKey: "LastId")
-            createNewNote(for: lastId + 1, title: title, description: description)
+            createNewNote(for: UUID(), title: title, description: description)
         }
     }
     
-    private func createNewNote(for modelId: Int, title: String, description: String) {
+    private func createNewNote(for modelId: UUID, title: String, description: String) {
         do {
             try coreDataManager.save { context in
                 let dbModel = DBNote(context: context)
-                dbModel.id = Int64(modelId)
+                dbModel.id = modelId
                 dbModel.title = title
                 dbModel.body = description
                 dbModel.completed = false
@@ -73,10 +69,10 @@ final class NoteInteractorImpl: NoteInteractor {
         }
     }
     
-    private func editNote(for modelId: Int, title: String, description: String) {
+    private func editNote(for modelId: UUID, title: String, description: String) {
         do {
             let fetchRequest = DBNote.fetchRequest()
-            let predicate = NSPredicate(format: "id == %d", modelId)
+            let predicate = NSPredicate(format: "id == %@", modelId as NSUUID)
             fetchRequest.predicate = predicate
 
             try coreDataManager.save { context in

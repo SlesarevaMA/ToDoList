@@ -51,12 +51,12 @@ final class NoteViewController: UIViewController, NoteViewInput {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        output.viewDidLoad()
+        
         addViews()
         addConstraints()
         configureViews()
         configureNavigationBar()
-        
-        navigationItem.largeTitleDisplayMode = .never
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -86,7 +86,7 @@ final class NoteViewController: UIViewController, NoteViewInput {
         
         titleTextView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(Constants.smallVerticalSpacing)
-            make.horizontalEdges.equalToSuperview().inset(Constants.horizontalMargin)
+            make.horizontalEdges.equalTo(view.snp.horizontalEdges).inset(Constants.horizontalMargin)
             make.height.greaterThanOrEqualTo(50)
         }
 
@@ -104,7 +104,7 @@ final class NoteViewController: UIViewController, NoteViewInput {
     
     private func configureViews() {
         view.backgroundColor = .systemBackground
-
+        
         titleTextView.textColor = .label
         titleTextView.font = .boldSystemFont(ofSize: 34)
         titleTextView.setContentHuggingPriority(.defaultLow, for: .vertical)
@@ -117,6 +117,7 @@ final class NoteViewController: UIViewController, NoteViewInput {
     }
     
     private func configureNavigationBar() {
+        navigationItem.largeTitleDisplayMode = .never
         navigationController?.navigationBar.tintColor = Color.accent
     }
 }
