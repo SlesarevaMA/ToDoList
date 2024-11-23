@@ -13,66 +13,26 @@ protocol NoteListInteractorOutput: AnyObject {
 }
 
 
-protocol NoteListViewOutput: AnyObject {
-    var view: NoteListViewInput? { get set }
-    var router: Router? { get set }
-    
+protocol NoteListViewOutput: AnyObject {    
     func viewWillAppear()
-    func cellDidTap(model: NoteListViewModel)
+    func didTapCell(id: Int)
     func rightBarButtonItemTapped()
 }
 
-final class NoteListPresenter: NoteListViewOutput {
+final class NoteListPresenter {
     weak var view: NoteListViewInput?
     weak var router: Router?
     
     private let interactor: NoteListInteractor
+    private let presenterQueue = DispatchQueue(
+        label: "com.ritulya.notelistpresenter",
+        target: .global(qos: .userInitiated)
+    )
     
     init(interactor: NoteListInteractor) {
         self.interactor = interactor
     }
-    
-    func viewWillAppear() {
-        interactor.getNotes { [weak self] result in
-            guard let self else {
-                return
-            }
-            
-            switch result {
-            case .success(let noteModels):
-                let viewModels = self.mapNoteListViewModels(noteModels)
-                
-                DispatchQueue.main.async {
-                    self.view?.addNotes(models: viewModels)
-                }
-            case .failure(let failure):
-                print(failure)
-            }
-        }
-    }
-    
-    func rightBarButtonItemTapped() {
-        let lastId = interactor.getLastId()
-        let dateString = Date().formatted(date: .abbreviated, time: .omitted)
-        let emptyNoteViewModel = NoteViewModel(id: lastId + 1, title: "", dateString: dateString, description: "")
-        router?.showNote(model: emptyNoteViewModel)
-    }
         
-    func cellDidTap(model: NoteListViewModel) {
-        let noteViewModel = mapNoteViewModel(noteListViewModel: model)
-        
-        router?.showNote(model: noteViewModel)
-    }
-    
-    private func mapNoteViewModel(noteListViewModel: NoteListViewModel) -> NoteViewModel {
-        return NoteViewModel(
-            id: noteListViewModel.id,
-            title: noteListViewModel.title,
-            dateString: noteListViewModel.dateString,
-            description: noteListViewModel.description
-        )
-    }
-    
     private func mapNoteListViewModels(_ models: [NoteModel]) -> [NoteListViewModel] {
         let viewModels = models.map { model in
             
@@ -88,5 +48,37 @@ final class NoteListPresenter: NoteListViewOutput {
         }
         
         return viewModels
+    }
+}
+
+extension NoteListPresenter: NoteListViewOutput {
+    
+    func viewWillAppear() {
+        presenterQueue.async {
+            self.interactor.getNotes { [weak self] result in
+                guard let self else {
+                    return
+                }
+                
+                switch result {
+                case .success(let noteModels):
+                    let viewModels = self.mapNoteListViewModels(noteModels)
+                    
+                    DispatchQueue.main.async {
+                        self.view?.addNotes(models: viewModels)
+                    }
+                case .failure(let failure):
+                    print(failure)
+                }
+            }
+        }
+    }
+    
+    func rightBarButtonItemTapped() {
+        router?.showNote(id: nil)
+    }
+        
+    func didTapCell(id: Int) {
+        router?.showNote(id: id)
     }
 }

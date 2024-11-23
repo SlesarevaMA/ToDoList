@@ -5,19 +5,33 @@
 //  Created by Margarita Slesareva on 21.11.2024.
 //
 
+
 import UIKit
 import SnapKit
 
+
 protocol NoteViewInput: AnyObject {
+    var currentText: String { get }
+    var currentDescription: String { get }
     
-    
+    func configure(with model: NoteViewModel)
 }
 
-
-final class NoteViewController: UIViewController {
-    private let output: NoteViewOutput
+final class NoteViewController: UIViewController, NoteViewInput {
     
-    private var modelId: Int?
+    var currentText: String {
+        get {
+            return titleTextView.text
+        }
+    }
+    
+    var currentDescription: String {
+        get {
+            return descriptionTextView.text
+        }
+    }
+    
+    private let output: NoteViewOutput
     
     private let scrollView = UIScrollView()
     private let titleTextView = UITextView()
@@ -42,31 +56,19 @@ final class NoteViewController: UIViewController {
         configureViews()
         configureNavigationBar()
         
-        navigationItem.backButtonDisplayMode = .minimal
+        navigationItem.largeTitleDisplayMode = .never
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if let modelId {
-            output.viewDidDisappear(id: modelId, title: titleTextView.text, description: descriptionTextView.text)
-        }
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        if let modelId {
-            output.viewDidDisappear(id: modelId, title: titleTextView.text, description: descriptionTextView.text)
-        }
+        output.viewWillDisappear()
     }
     
     func configure(with model: NoteViewModel) {
         titleTextView.text = model.title
         dateLabel.text = model.dateString
         descriptionTextView.text = model.description
-                
-        modelId = model.id
     }
     
     private func addViews() {
@@ -91,28 +93,22 @@ final class NoteViewController: UIViewController {
         dateLabel.snp.makeConstraints { make in
             make.top.equalTo(titleTextView.snp.bottom).offset(Constants.smallVerticalSpacing)
             make.horizontalEdges.equalTo(titleTextView.snp.horizontalEdges)
-//            make.height.greaterThanOrEqualTo(50)
         }
         
         descriptionTextView.snp.makeConstraints { make in
             make.top.equalTo(dateLabel.snp.bottom).offset(Constants.verticalSpacing)
-//            make.horizontalEdges.equalToSuperview().inset(Constants.horizontalMargin)
             make.horizontalEdges.equalTo(titleTextView.snp.horizontalEdges)
-//            make.bottom.equalToSuperview()
             make.height.greaterThanOrEqualTo(50)
         }
     }
     
     private func configureViews() {
         view.backgroundColor = .systemBackground
-//        navigationItem.backButtonDisplayMode = .minimal
-        
+
         titleTextView.textColor = .label
         titleTextView.font = .boldSystemFont(ofSize: 34)
         titleTextView.setContentHuggingPriority(.defaultLow, for: .vertical)
 
-//        titleTextField.
-        
         dateLabel.textColor = Color.stroke
         dateLabel.font = .systemFont(ofSize: 16)
         

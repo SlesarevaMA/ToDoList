@@ -11,7 +11,6 @@ import Foundation
 
 protocol NoteListInteractor: AnyObject {
     func getNotes(completion: @escaping (Result<[NoteModel], RequestError>) -> Void)
-    func getLastId() -> Int
 }
 
 final class NoteListInteractorImpl: NoteListInteractor {
@@ -38,14 +37,7 @@ final class NoteListInteractorImpl: NoteListInteractor {
         
         userDefaults.set(true, forKey: "isFirstLaunch")
     }
-    
-    func getLastId() -> Int {
-        let lastId = userDefaults.integer(forKey: "LastId")
-        userDefaults.set(lastId + 1, forKey: "LastId")
         
-        return lastId
-    }
-    
     private func getNotesFromStorage(completion: @escaping (Result<[NoteModel], RequestError>) -> Void) {
         do {
             let fetchRequest = DBNote.fetchRequest()
@@ -79,6 +71,7 @@ final class NoteListInteractorImpl: NoteListInteractor {
                 
                 let lastModel = noteModels.max { $0.id < $1.id }
                 
+                // Убрать
                 if let maxId = lastModel?.id {
                     self.userDefaults.set(maxId, forKey: "LastId")
                 }

@@ -15,8 +15,13 @@ protocol NoteListViewInput: AnyObject {
 final class NoteListViewController: UIViewController, NoteListViewInput {
     private let output: NoteListViewOutput
     
-    private let titleLabel = UILabel()
     private let tableView = UITableView()
+    private let centerBarButtonItem = UIBarButtonItem(
+        title: nil,
+        style: .plain,
+        target: nil,
+        action: nil
+    )
     
     private var noteListModels = [NoteListViewModel]()
     
@@ -40,49 +45,32 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
         super.viewWillAppear(animated)
         
         output.viewWillAppear()
-        navigationItem.title = "Avatar"
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        navigationItem.title = nil
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
     }
     
     func addNotes(models: [NoteListViewModel]) {
         noteListModels = models
-        
-        congigureToolBar()
+        centerBarButtonItem.title = "\(models.count) задач"
         tableView.reloadData()
     }
-    
+
     private func setup() {
         addViews()
         addConstraints()
         configureViews()
+        congigureToolBar()
         setupTableView()
     }
     
     private func addViews() {
-        [titleLabel, tableView].forEach {
+        [tableView].forEach {
             view.addSubview($0)
         }
     }
     
     private func addConstraints() {
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.layoutMarginsGuide.snp.top).offset(Constants.verticalSpacing)
-            make.horizontalEdges.equalToSuperview().inset(Constants.horizontalMargin)
-        }
-
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom)
-            make.bottom.equalTo(view.layoutMarginsGuide.snp.bottom) // equalToSuperview()
+            make.top.equalToSuperview()
+            make.bottom.equalTo(view.layoutMarginsGuide.snp.bottom)
             make.horizontalEdges.equalToSuperview()
         }
     }
@@ -95,13 +83,11 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
     }
     
     private func configureViews() {
+        navigationItem.title = "Задачи"
+        navigationItem.backButtonTitle = "Назад"
+
         navigationController?.navigationBar.prefersLargeTitles = true
-        
-        view.backgroundColor = .systemBackground//.systemGray6
-        
-        titleLabel.textColor = .label
-        titleLabel.font = .boldSystemFont(ofSize: 34)
-        titleLabel.text = "Задачи"
+        view.backgroundColor = .systemBackground
     }
     
     private func congigureToolBar() {
@@ -110,15 +96,6 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
             style: .plain,
             target: self,
             action: #selector(rightBarButtonItemTapped)
-        )
-        
-        let string = "\(noteListModels.count) задач"
-        
-        let centerBarButtonItem = UIBarButtonItem(
-            title: string,
-            style: .plain,
-            target: nil,
-            action: nil
         )
         
         navigationController?.toolbar.backgroundColor = .systemGray6
@@ -152,7 +129,7 @@ extension NoteListViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let model = noteListModels[indexPath.row]
-        output.cellDidTap(model: model)
+        output.didTapCell(id: model.id)
     }
 }
 

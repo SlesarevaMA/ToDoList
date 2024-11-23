@@ -9,7 +9,7 @@ import UIKit
 
 protocol Router: AnyObject {
     func showNoteList()
-    func showNote(model: NoteViewModel)
+    func showNote(id: Int?)
 }
 
 final class RouterImpl: Router {
@@ -28,7 +28,7 @@ final class RouterImpl: Router {
             userDefaults: assembly.userDefaults
         )
         
-        let noteListPresenter: NoteListViewOutput = NoteListPresenter(interactor: noteListInteractor)
+        let noteListPresenter = NoteListPresenter(interactor: noteListInteractor)
         let noteListViewController = NoteListViewController(noteListViewOutput: noteListPresenter)
         
         noteListPresenter.view = noteListViewController
@@ -37,15 +37,17 @@ final class RouterImpl: Router {
         navigationController.setViewControllers([noteListViewController], animated: false)
     }
     
-    func showNote(model: NoteViewModel) {
+    func showNote(id: Int?) {
         let noteInteractor: NoteInteractor = NoteInteractorImpl(
             coreDataManager: assembly.coreDataManager,
             userDefaults: assembly.userDefaults
         )
         
-        let notePresenter: NoteViewOutput = NotePresenter(interactor: noteInteractor)
+        let notePresenter = NotePresenter(interactor: noteInteractor)
+        notePresenter.setModelId(id)
+        
         let noteViewController = NoteViewController(output: notePresenter)
-        noteViewController.configure(with: model)
+        notePresenter.view = noteViewController
         
         navigationController.pushViewController(noteViewController, animated: true)
     }

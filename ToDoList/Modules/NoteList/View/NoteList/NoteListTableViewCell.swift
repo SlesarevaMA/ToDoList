@@ -8,6 +8,10 @@
 import UIKit
 import SnapKit
 
+protocol NoteListTableViewCellDelegate: AnyObject {
+
+}
+
 
 final class NoteListTableViewCell: UITableViewCell {
     private let checkmarkButton = UIButton()
@@ -16,6 +20,7 @@ final class NoteListTableViewCell: UITableViewCell {
     private let dateLabel = UILabel()
 
     private var id: Int?
+    private var completed: Bool?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -43,6 +48,7 @@ final class NoteListTableViewCell: UITableViewCell {
         configureCheckmarkButton(completed: model.completed)
 
         id = model.id
+        completed = model.completed
     }
     
     private func configureCheckmarkButton(completed: Bool) {
@@ -63,7 +69,7 @@ final class NoteListTableViewCell: UITableViewCell {
     
     private func addViews() {
         [checkmarkButton, titleLabel, descriptionLabel, dateLabel]
-            .forEach { addSubview($0) }
+            .forEach { contentView.addSubview($0) }
     }
     
     private func addConstraints() {
@@ -103,6 +109,14 @@ final class NoteListTableViewCell: UITableViewCell {
         
         dateLabel.textColor = Color.stroke
         dateLabel.font = .systemFont(ofSize: 16)
+        
+        checkmarkButton.addTarget(self, action: #selector(checkmarkButtonTapped), for: .touchUpInside)
+    }
+
+    @objc private func checkmarkButtonTapped() {
+        configureCheckmarkButton(completed: !(completed ?? true))
+        
+        completed?.toggle()
     }
 }
 

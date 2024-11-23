@@ -11,4 +11,5 @@ struct NoteViewModel {
     let title: String
     let dateString: String
     let description: String
+    let completed: Bool
 }
