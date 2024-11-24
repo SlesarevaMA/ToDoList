@@ -16,6 +16,8 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
     private let output: NoteListViewOutput
     
     private let tableView = UITableView()
+    private let searchController = UISearchController(searchResultsController: nil)
+
     private let centerBarButtonItem = UIBarButtonItem(
         title: nil,
         style: .plain,
@@ -24,6 +26,7 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
     )
     
     private var noteListModels = [NoteListViewModel]()
+    private var filteredData = [NoteListViewModel]()
     
     init(noteListViewOutput: NoteListViewOutput) {
         self.output = noteListViewOutput
@@ -59,6 +62,7 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
         configureViews()
         congigureToolBar()
         setupTableView()
+        confifureSearchController()
     }
     
     private func addViews() {
@@ -104,21 +108,48 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
         setToolbarItems([.flexibleSpace(), centerBarButtonItem,.flexibleSpace(), rightBarButtonItem], animated: false)
     }
     
+    private func confifureSearchController() {
+        searchController.hidesNavigationBarDuringPresentation = false
+        searchController.delegate = self
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.placeholder = "Search"
+        navigationItem.searchController = searchController
+    }
+    
     @objc private func rightBarButtonItemTapped() {
         output.rightBarButtonItemTapped()
+    }
+    
+    private func isFiltering() -> Bool {
+        return searchController.isActive && !searchBarIsEmpty()
+    }
+    
+    private func searchBarIsEmpty() -> Bool {
+        return searchController.searchBar.text?.isEmpty ?? true
+    }
+}
+
+extension NoteListViewController: UISearchControllerDelegate, UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchText = searchController.searchBar.text else { return }
+        
+        filteredData = noteListModels.filter({ note in
+            note.title.lowercased().contains(searchText.lowercased())
+        })
+        
+        tableView.reloadData()
     }
 }
 
 extension NoteListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return noteListModels.count
+        return isFiltering() ? filteredData.count : noteListModels.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: NoteListTableViewCell = tableView.dequeReusableCell(for: indexPath)
-        let model = noteListModels[indexPath.row]
-                
-        cell.configure(with: model)
+        let note = isFiltering() ? filteredData[indexPath.row] : noteListModels[indexPath.row]
+        cell.configure(with: note)
         
         return cell
     }
@@ -130,6 +161,41 @@ extension NoteListViewController: UITableViewDelegate {
         
         let model = noteListModels[indexPath.row]
         output.didTapCell(id: model.id)
+    }
+    
+    func tableView(
+        _ tableView: UITableView,
+        contextMenuConfigurationForRowAt indexPath: IndexPath,
+        point: CGPoint
+    ) -> UIContextMenuConfiguration? {
+        let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            // Создание действий для меню
+            let firstAction = UIAction(title: "Редактировать", image: UIImage(systemName: "square.and.pencil")) { _ in
+                let model = self.noteListModels[indexPath.row]
+                self.output.firstActionTapped(id: model.id)
+            }
+            
+            let secondAction = UIAction(title: "Поделиться", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                print("Поделиться")
+            }
+            
+            let thirdAction = UIAction(
+                title: "Удалить", image: UIImage(systemName: "trash"), attributes: .destructive
+            ) { [self] _ in
+                let model = self.noteListModels[indexPath.row]
+                self.output.thirdActionTapped(id: model.id)
+                self.noteListModels.removeAll { note in
+                    note.id == model.id
+                }
+                
+                centerBarButtonItem.title = "\(noteListModels.count) задач"
+                tableView.reloadData()
+            }
+            
+            return UIMenu(children: [firstAction, secondAction, thirdAction])
+        }
+        
+        return configuration
     }
 }
 

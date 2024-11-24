@@ -11,6 +11,7 @@ import Foundation
 
 protocol NoteListInteractor: AnyObject {
     func getNotes(completion: @escaping (Result<[NoteModel], RequestError>) -> Void)
+    func deleteNote(id: UUID)
 }
 
 final class NoteListInteractorImpl: NoteListInteractor {
@@ -36,6 +37,18 @@ final class NoteListInteractorImpl: NoteListInteractor {
         }
         
         userDefaults.set(true, forKey: "isFirstLaunch")
+    }
+    
+    func deleteNote(id: UUID) {
+        do {
+            let fetchRequest = DBNote.fetchRequest()
+            let predicate = NSPredicate(format: "id == %@", id as NSUUID)
+            fetchRequest.predicate = predicate
+            
+            try coreDataManager.delete(for: fetchRequest)
+        } catch {
+            print("Delete model error: \(error)")
+        }
     }
         
     private func getNotesFromStorage(completion: @escaping (Result<[NoteModel], RequestError>) -> Void) {

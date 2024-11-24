@@ -16,6 +16,10 @@ protocol NoteListViewOutput: AnyObject {
     func viewWillAppear()
     func didTapCell(id: UUID)
     func rightBarButtonItemTapped()
+    
+    func firstActionTapped(id: UUID)
+    func secondActionTapped()
+    func thirdActionTapped(id: UUID)
 }
 
 final class NoteListPresenter {
@@ -51,7 +55,6 @@ final class NoteListPresenter {
 }
 
 extension NoteListPresenter: NoteListViewOutput {
-    
     func viewWillAppear() {
         presenterQueue.async {
             self.interactor.getNotes { [weak self] result in
@@ -79,5 +82,19 @@ extension NoteListPresenter: NoteListViewOutput {
         
     func didTapCell(id: UUID) {
         router?.showNote(id: id)
+    }
+    
+    func firstActionTapped(id: UUID) {
+        router?.showNote(id: id)
+    }
+    
+    func secondActionTapped() {
+        
+    }
+    
+    func thirdActionTapped(id: UUID) {
+        presenterQueue.async {
+            self.interactor.deleteNote(id: id)
+        }
     }
 }

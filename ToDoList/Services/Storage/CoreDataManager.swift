@@ -13,7 +13,7 @@ protocol CoreDataManager: AnyObject {
         fetchReuqest: NSFetchRequest<T>,
         mapClosure: @escaping (T) -> O
     ) throws -> [O]
-    func delete(for fetchRequest: NSFetchRequest<NSFetchRequestResult>) throws
+    func delete<T: NSManagedObject>(for fetchRequest: NSFetchRequest<T>) throws
 }
 
 final class CoreDataManagerImpl: CoreDataManager {
@@ -55,17 +55,16 @@ final class CoreDataManagerImpl: CoreDataManager {
         }
     }
     
-    func delete(for fetchRequest: NSFetchRequest<NSFetchRequestResult>) throws {
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+    func delete<T: NSManagedObject>(for fetchRequest: NSFetchRequest<T>) throws {
+        let objects = try objectContext.fetch(fetchRequest)
 
         try objectContext.performAndWait {
-            try self.persistentContainer.persistentStoreCoordinator.execute(
-                deleteRequest,
-                with: self.objectContext
-            )
+            for object in objects {
+                self.objectContext.delete(object)
+            }
 
             try self.save()
-        } 
+        }
     }
     
     private func save() throws {
