@@ -28,7 +28,12 @@ final class RouterImpl: Router {
             userDefaults: assembly.userDefaults
         )
         
-        let noteListPresenter = NoteListPresenter(interactor: noteListInteractor)
+        let presenterQueue = DispatchQueue(
+            label: "com.ritulya.notelistpresenter",
+            target: .global(qos: .userInitiated)
+        )
+        
+        let noteListPresenter = NoteListPresenter(interactor: noteListInteractor, presenterQueue: presenterQueue)
         let noteListViewController = NoteListViewController(noteListViewOutput: noteListPresenter)
         
         noteListPresenter.view = noteListViewController

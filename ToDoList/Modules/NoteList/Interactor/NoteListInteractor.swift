@@ -14,9 +14,7 @@ protocol NoteListInteractor: AnyObject {
     func deleteNote(id: UUID)
 }
 
-final class NoteListInteractorImpl: NoteListInteractor {
-    weak var output: NoteListInteractorOutput?
-    
+final class NoteListInteractorImpl: NoteListInteractor {    
     private let networkService: NetworkService
     private let coreDataManager: CoreDataManager
     private let userDefaults: UserDefaults

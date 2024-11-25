@@ -18,6 +18,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         willConnectTo session: UISceneSession,
         options connectionOptions: UIScene.ConnectionOptions
     ) {
+        let isRunnningTests = NSClassFromString("XCTestCase") != nil
+        
+        guard !isRunnningTests else {
+            return
+        }
 
         guard let windowScene = (scene as? UIWindowScene) else {
             return

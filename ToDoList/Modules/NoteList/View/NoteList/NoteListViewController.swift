@@ -48,6 +48,7 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
         super.viewWillAppear(animated)
         
         output.viewWillAppear()
+        navigationController?.setToolbarHidden(false, animated: false)
     }
     
     func addNotes(models: [NoteListViewModel]) {

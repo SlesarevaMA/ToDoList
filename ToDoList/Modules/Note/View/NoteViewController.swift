@@ -87,7 +87,7 @@ final class NoteViewController: UIViewController, NoteViewInput {
         titleTextView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(Constants.smallVerticalSpacing)
             make.horizontalEdges.equalTo(view.snp.horizontalEdges).inset(Constants.horizontalMargin)
-            make.height.greaterThanOrEqualTo(50)
+            make.height.lessThanOrEqualTo(100)
         }
 
         dateLabel.snp.makeConstraints { make in
@@ -113,12 +113,13 @@ final class NoteViewController: UIViewController, NoteViewInput {
         dateLabel.font = .systemFont(ofSize: 16)
         
         descriptionTextView.textColor = .label
-        descriptionTextView.font = .systemFont(ofSize: 12)
+        descriptionTextView.font = .systemFont(ofSize: 16)
     }
     
     private func configureNavigationBar() {
         navigationItem.largeTitleDisplayMode = .never
         navigationController?.navigationBar.tintColor = Color.accent
+        navigationController?.setToolbarHidden(true, animated: false)
     }
 }
 

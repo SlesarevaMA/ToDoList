@@ -8,9 +8,6 @@
 
 import Foundation
 
-protocol NoteListInteractorOutput: AnyObject {
-    
-}
 
 protocol NoteListViewOutput: AnyObject {
     func viewWillAppear()
@@ -27,13 +24,17 @@ final class NoteListPresenter {
     weak var router: Router?
     
     private let interactor: NoteListInteractor
-    private let presenterQueue = DispatchQueue(
-        label: "com.ritulya.notelistpresenter",
-        target: .global(qos: .userInitiated)
-    )
-    
-    init(interactor: NoteListInteractor) {
+    private let presenterQueue: DispatchQueueType
+    private let mainQueue: DispatchQueueType
+
+    init(
+        interactor: NoteListInteractor,
+        presenterQueue: DispatchQueueType,
+        mainQueue: DispatchQueueType = DispatchQueue.main
+    ) {
         self.interactor = interactor
+        self.presenterQueue = presenterQueue
+        self.mainQueue = mainQueue
     }
         
     private func mapNoteListViewModels(_ models: [NoteModel]) -> [NoteListViewModel] {
@@ -66,7 +67,7 @@ extension NoteListPresenter: NoteListViewOutput {
                 case .success(let noteModels):
                     let viewModels = self.mapNoteListViewModels(noteModels)
                     
-                    DispatchQueue.main.async {
+                    mainQueue.async {
                         self.view?.addNotes(models: viewModels)
                     }
                 case .failure(let failure):
