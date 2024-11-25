@@ -35,11 +35,7 @@ final class NoteInteractorImpl: NoteInteractor {
                 )
             }
             
-            guard let model = models.first else {
-                fatalError("Read DB error")
-            }
-            
-            return model
+            return models.first
         } catch {
             print("Edit note error: \(error)")
             return nil

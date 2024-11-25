@@ -15,7 +15,6 @@ protocol NoteListViewOutput: AnyObject {
     func rightBarButtonItemTapped()
     
     func firstActionTapped(id: UUID)
-    func secondActionTapped()
     func thirdActionTapped(id: UUID)
 }
 
@@ -87,10 +86,6 @@ extension NoteListPresenter: NoteListViewOutput {
     
     func firstActionTapped(id: UUID) {
         router?.showNote(id: id)
-    }
-    
-    func secondActionTapped() {
-        
     }
     
     func thirdActionTapped(id: UUID) {

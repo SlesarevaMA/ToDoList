@@ -45,7 +45,12 @@ final class RouterImpl: Router {
     func showNote(id: UUID?) {
         let noteInteractor = NoteInteractorImpl(coreDataManager: assembly.coreDataManager)
         
-        let notePresenter = NotePresenter(interactor: noteInteractor)
+        let presenterQueue = DispatchQueue(
+            label: "com.ritulya.noteresenter",
+            target: .global(qos: .userInitiated)
+        )
+        
+        let notePresenter = NotePresenter(interactor: noteInteractor, presenterQueue: presenterQueue)
         notePresenter.setModelId(id)
         
         let noteViewController = NoteViewController(output: notePresenter)

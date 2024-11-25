@@ -17,24 +17,25 @@ protocol NoteListInteractor: AnyObject {
 final class NoteListInteractorImpl: NoteListInteractor {    
     private let networkService: NetworkService
     private let coreDataManager: CoreDataManager
-    private let userDefaults: UserDefaults
+    private let userDefaults: UserDefaultsType
             
-    init(networkService: NetworkService, coreDataManager: CoreDataManager, userDefaults: UserDefaults) {
+    init(networkService: NetworkService, coreDataManager: CoreDataManager, userDefaults: UserDefaultsType) {
         self.networkService = networkService
         self.coreDataManager = coreDataManager
         self.userDefaults = userDefaults
     }
     
     func getNotes(completion: @escaping (Result<[NoteModel], RequestError>) -> Void) {
-        let isNotFirstLaunch = userDefaults.bool(forKey: "isFirstLaunch")
+        let isFirstLaunch = !userDefaults.bool(forKey: "isNotFirstLaunch")
 
-        if isNotFirstLaunch {
-            getNotesFromStorage(completion: completion)
-        } else {
+        if isFirstLaunch {
             getNotesFromNetwork(completion: completion)
+        } else {
+            getNotesFromStorage(completion: completion)
+
         }
         
-        userDefaults.set(true, forKey: "isFirstLaunch")
+        userDefaults.set(true, forKey: "isNotFirstLaunch")
     }
     
     func deleteNote(id: UUID) {

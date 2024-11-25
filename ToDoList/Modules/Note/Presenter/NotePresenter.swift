@@ -17,15 +17,13 @@ final class NotePresenter: NoteViewOutput {
     weak var view: NoteViewInput?
     
     private let interactor: NoteInteractor
-    private let presenterQueue = DispatchQueue(
-        label: "com.ritulya.noteresenter",
-        target: .global(qos: .userInitiated)
-    )
+    private let presenterQueue: DispatchQueueType
     
     private var modelId: UUID?
     
-    init(interactor: NoteInteractor) {
+    init(interactor: NoteInteractor, presenterQueue: DispatchQueueType) {
         self.interactor = interactor
+        self.presenterQueue = presenterQueue
     }
     
     func setModelId(_ modelId: UUID?) {
