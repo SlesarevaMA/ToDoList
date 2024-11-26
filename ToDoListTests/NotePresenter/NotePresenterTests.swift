@@ -17,16 +17,21 @@ struct NotePresenterTests {
     private let noteViewInputMock = NoteViewInputMock()
     
     init() {
-        notePresenter = NotePresenter(interactor: noteInteractorMock, presenterQueue: DispatchQueueMock())
+        notePresenter = NotePresenter(
+            interactor: noteInteractorMock,
+            presenterQueue: DispatchQueueMock(),
+            mainQueue: DispatchQueueMock()
+        )
         notePresenter.view = noteViewInputMock
     }
     
     @Test
     func viewDidLoad_configureExistingModelCalled() {
         // given
-        notePresenter.setModelId(UUID())
+        let uuid = UUID()
+        notePresenter.setModelId(uuid)
         noteInteractorMock.fetchNoteFromIdReturnValue = NoteModel(
-            id: UUID(),
+            id: uuid,
             completed: true,
             title: "",
             description: "",
@@ -38,6 +43,7 @@ struct NotePresenterTests {
         
         // then
         #expect(noteViewInputMock.configureCalledCount == 1)
+        #expect(noteInteractorMock.fetchNoteFromIdArgumentValue == uuid)
     }
 
     @Test
@@ -85,8 +91,6 @@ struct NotePresenterTests {
     
     @Test
     func viewWillDisappear_saveChangesCalled() {
-        // given
-        
         // when
         notePresenter.viewWillDisappear()
         

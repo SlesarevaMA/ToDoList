@@ -31,8 +31,6 @@ struct NoteListPresenterTests {
     
     @Test
     func viewWillApear_getNotesCalled() {
-        // given
-        
         // when
         noteListPresenter.viewIsAppearing()
         

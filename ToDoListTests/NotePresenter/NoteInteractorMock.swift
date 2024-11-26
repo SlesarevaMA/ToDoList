@@ -10,9 +10,10 @@ import Testing
 import Foundation
 
 
-class NoteInteractorMock: NoteInteractor {
+final class NoteInteractorMock: NoteInteractor {
     
     var fetchNoteFromIdReturnValue: NoteModel?
+    var fetchNoteFromIdArgumentValue: UUID?
     
     private(set) var saveChangesCalledCount = 0
     
@@ -20,7 +21,8 @@ class NoteInteractorMock: NoteInteractor {
         saveChangesCalledCount += 1
     }
     
-    func fetchNote(from id: UUID) -> NoteModel? {        
+    func fetchNote(from id: UUID) -> NoteModel? {
+        fetchNoteFromIdArgumentValue = id
         return fetchNoteFromIdReturnValue
     }
 }

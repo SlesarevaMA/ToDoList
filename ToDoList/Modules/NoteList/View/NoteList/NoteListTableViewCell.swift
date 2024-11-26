@@ -38,7 +38,6 @@ final class NoteListTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
 
-        completed = nil
         titleLabel.attributedText = nil
         descriptionLabel.text = nil
         dateLabel.text = nil

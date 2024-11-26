@@ -18,7 +18,7 @@ class NoteViewInputMock: NoteViewInput {
     private(set) var setFocusOnDescriptionCalledCount = 0
 
     
-    func configure(with model: ToDoList.NoteViewModel) {
+    func configure(with model: NoteViewModel) {
         configureCalledCount += 1
     }
     

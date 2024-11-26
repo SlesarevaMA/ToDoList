@@ -14,7 +14,7 @@ class NoteListInteractorMock: NoteListInteractor {
     private(set) var deleteNoteCalledCount = 0
     private(set) var editNoteCalledCount = 0
     
-    func getNotes(completion: @escaping (Result<[ToDoList.NoteModel], ToDoList.RequestError>) -> Void) {
+    func getNotes(completion: @escaping (Result<[NoteModel], RequestError>) -> Void) {
         getNotesCalledCount += 1
         
         let models = [NoteModel]()
