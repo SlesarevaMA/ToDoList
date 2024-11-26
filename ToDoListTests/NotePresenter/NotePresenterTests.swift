@@ -5,6 +5,7 @@
 //  Created by Margarita Slesareva on 25.11.2024.
 //
 
+import Foundation
 import Testing
 @testable import ToDoList
 
@@ -21,8 +22,28 @@ struct NotePresenterTests {
     }
     
     @Test
-    func viewDidLoad_configure() {
+    func viewDidLoad_configureExistingModelCalled() {
         // given
+        notePresenter.setModelId(UUID())
+        noteInteractorMock.fetchNoteFromIdReturnValue = NoteModel(
+            id: UUID(),
+            completed: true,
+            title: "",
+            description: "",
+            date: Date()
+        )
+        
+        // when
+        notePresenter.viewDidLoad()
+        
+        // then
+        #expect(noteViewInputMock.configureCalledCount == 1)
+    }
+
+    @Test
+    func viewDidLoad_configureNewModelCalled() {
+        // given
+        notePresenter.setModelId(nil)
         
         // when
         notePresenter.viewDidLoad()
@@ -32,7 +53,38 @@ struct NotePresenterTests {
     }
     
     @Test
-    func viewWillDisappear_saveChanges() {
+    func viewDidLoad_setFocusOnTitleCalled() {
+        // given
+        notePresenter.setModelId(nil)
+        
+        // when
+        notePresenter.viewDidLoad()
+        
+        // then
+        #expect(noteViewInputMock.setFocusOnTitleCalledCount == 1)
+    }
+    
+    @Test
+    func viewDidLoad_setFocusOnDescriptionCalled() {
+        // given
+        notePresenter.setModelId(UUID())
+        noteInteractorMock.fetchNoteFromIdReturnValue = NoteModel(
+            id: UUID(),
+            completed: true,
+            title: "",
+            description: "",
+            date: Date()
+        )
+        
+        // when
+        notePresenter.viewDidLoad()
+        
+        // then
+        #expect(noteViewInputMock.setFocusOnDescriptionCalledCount == 1)
+    }
+    
+    @Test
+    func viewWillDisappear_saveChangesCalled() {
         // given
         
         // when

@@ -18,4 +18,13 @@ class DispatchQueueMock: DispatchQueueType {
     ) {
         work()
     }
+    
+    func asyncAfter(
+        deadline: DispatchTime,
+        qos: DispatchQoS = .unspecified,
+        flags: DispatchWorkItemFlags = [],
+        execute work: @escaping @Sendable @convention(block) () -> Void
+    ) {
+        work()
+    }
 }

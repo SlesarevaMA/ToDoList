@@ -19,12 +19,18 @@ final class NotePresenter: NoteViewOutput {
     
     private let interactor: NoteInteractor
     private let presenterQueue: DispatchQueueType
+    private let mainQueue: DispatchQueueType
     
     private var modelId: UUID?
     
-    init(interactor: NoteInteractor, presenterQueue: DispatchQueueType) {
+    init(
+        interactor: NoteInteractor,
+        presenterQueue: DispatchQueueType,
+        mainQueue: DispatchQueueType = DispatchQueue.main
+    ) {
         self.interactor = interactor
         self.presenterQueue = presenterQueue
+        self.mainQueue = mainQueue
     }
     
     func setModelId(_ modelId: UUID?) {
@@ -38,7 +44,7 @@ final class NotePresenter: NoteViewOutput {
                     return
                 }
                 
-                DispatchQueue.main.async {
+                self.mainQueue.async {
                     self.view?.configure(with: viewModel)
                 }
                 
@@ -67,7 +73,7 @@ final class NotePresenter: NoteViewOutput {
     
     private func setFocus(isNewNote: Bool) {
         // Ждем, пока откроется экран (Можем на viewDidAppear, но не будем усложнять логику)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        mainQueue.asyncAfter(deadline: .now() + 0.5) {
             if isNewNote {
                 self.view?.setFocusOnTitle()
             } else  {
