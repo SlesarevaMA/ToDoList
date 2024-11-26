@@ -21,7 +21,7 @@ protocol NoteListViewOutput: AnyObject {
 
 final class NoteListPresenter {
     weak var view: NoteListViewInput?
-    weak var router: Router?
+    var router: Router?
     
     private let interactor: NoteListInteractor
     private let presenterQueue: DispatchQueueType

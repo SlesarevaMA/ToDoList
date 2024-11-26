@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// Закрываем DispatchQueue протоколом, чтобы тестировать асинхронный код синхронно и не использовать expectations.
+/// Таким образом тесты будут работать быстрее и не будут флакать.
 protocol DispatchQueueType: AnyObject {
     func async(
         group: DispatchGroup?,

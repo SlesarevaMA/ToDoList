@@ -15,6 +15,8 @@ protocol NoteViewInput: AnyObject {
     var currentDescription: String { get }
     
     func configure(with model: NoteViewModel)
+    func setFocusOnTitle()
+    func setFocusOnDescription()
 }
 
 final class NoteViewController: UIViewController, NoteViewInput {
@@ -34,6 +36,7 @@ final class NoteViewController: UIViewController, NoteViewInput {
     private let output: NoteViewOutput
     
     private let scrollView = UIScrollView()
+    private let scrollContentView = UIView()
     private let titleTextView = UITextView()
     private let dateLabel = UILabel()
     private let descriptionTextView = UITextView()
@@ -54,8 +57,8 @@ final class NoteViewController: UIViewController, NoteViewInput {
         output.viewDidLoad()
         
         addViews()
-        addConstraints()
         configureViews()
+        addConstraints()
         configureNavigationBar()
         setDismissKeyboard()
     }
@@ -94,12 +97,36 @@ final class NoteViewController: UIViewController, NoteViewInput {
         }
     }
     
+    func setFocusOnTitle() {
+        titleTextView.becomeFirstResponder()
+    }
+    
+    func setFocusOnDescription() {
+        descriptionTextView.becomeFirstResponder()
+    }
+    
     private func addViews() {
-        [titleTextView, dateLabel, descriptionTextView].forEach {
-            scrollView.addSubview($0)
-        }
-        
         view.addSubview(scrollView)
+        scrollView.addSubview(scrollContentView)
+        
+        [titleTextView, dateLabel, descriptionTextView].forEach {
+            scrollContentView.addSubview($0)
+        }
+    }
+    
+    private func configureViews() {
+        view.backgroundColor = .systemBackground
+        
+        titleTextView.isScrollEnabled = false
+        titleTextView.setContentHuggingPriority(.required, for: .vertical)
+        titleTextView.sizeToFit()
+
+        dateLabel.font = .systemFont(ofSize: 16)
+        
+        descriptionTextView.textColor = .label
+        descriptionTextView.font = .systemFont(ofSize: 16)
+        descriptionTextView.isScrollEnabled = false
+        descriptionTextView.sizeToFit()
     }
     
     private func addConstraints() {
@@ -107,9 +134,17 @@ final class NoteViewController: UIViewController, NoteViewInput {
             make.edges.equalToSuperview()
         }
         
+        scrollContentView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.top.equalToSuperview()
+            make.bottom.equalToSuperview()
+            make.width.equalToSuperview()
+            make.height.greaterThanOrEqualToSuperview()
+        }
+        
         titleTextView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(Constants.smallVerticalSpacing)
-            make.horizontalEdges.equalTo(view.snp.horizontalEdges).inset(Constants.horizontalMargin)
+            make.top.equalToSuperview().offset(Constants.smallVerticalSpacing)
+            make.horizontalEdges.equalToSuperview().inset(Constants.horizontalMargin)
         }
 
         dateLabel.snp.makeConstraints { make in
@@ -119,24 +154,8 @@ final class NoteViewController: UIViewController, NoteViewInput {
         
         descriptionTextView.snp.makeConstraints { make in
             make.top.equalTo(dateLabel.snp.bottom).offset(Constants.verticalSpacing)
-            make.horizontalEdges.equalTo(titleTextView.snp.horizontalEdges)
-            make.height.greaterThanOrEqualTo(50)
+            make.bottom.equalToSuperview()
         }
-    }
-    
-    private func configureViews() {
-        view.backgroundColor = .systemBackground
-        
-        titleTextView.setContentHuggingPriority(.defaultLow, for: .vertical)
-        titleTextView.isScrollEnabled = false
-        titleTextView.sizeToFit()
-
-        dateLabel.font = .systemFont(ofSize: 16)
-        
-        descriptionTextView.textColor = .label
-        descriptionTextView.font = .systemFont(ofSize: 16)
-        descriptionTextView.isScrollEnabled = false
-        descriptionTextView.sizeToFit()
     }
     
     private func configureNavigationBar() {

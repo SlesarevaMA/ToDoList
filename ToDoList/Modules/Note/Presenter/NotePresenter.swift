@@ -40,10 +40,13 @@ final class NotePresenter: NoteViewOutput {
                 DispatchQueue.main.async {
                     self.view?.configure(with: viewModel)
                 }
+                
+                self.setFocus(isNewNote: false)
             }
         } else {
             let dateString = Date().formatted(date: .abbreviated, time: .omitted)
             view?.configure(with: NoteViewModel(title: "", dateString: dateString, description: "", completed: false))
+            setFocus(isNewNote: true)
         }
     }
     
@@ -58,6 +61,17 @@ final class NotePresenter: NoteViewOutput {
         
         presenterQueue.async {
             self.interactor.saveChanges(for: self.modelId, title: title, description: description)
+        }
+    }
+    
+    private func setFocus(isNewNote: Bool) {
+        // Ждем, пока откроется экран (Можем на viewDidAppear, но не будем усложнять логику)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            if isNewNote {
+                self.view?.setFocusOnTitle()
+            } else  {
+                self.view?.setFocusOnDescription()
+            }
         }
     }
     

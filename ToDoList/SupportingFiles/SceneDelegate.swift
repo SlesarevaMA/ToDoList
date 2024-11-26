@@ -35,7 +35,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         router = RouterImpl(navigationController: navigationController, assembly: assembly)
         
         window = UIWindow(windowScene: windowScene)
-        
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
         

@@ -30,6 +30,7 @@ final class RouterImpl: Router {
         
         let presenterQueue = DispatchQueue(
             label: "com.ritulya.notelistpresenter",
+            // Чтобы не создавать новый поток, а брать из пула потоков (non overcommit).
             target: .global(qos: .userInitiated)
         )
         

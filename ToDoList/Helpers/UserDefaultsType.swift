@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 protocol UserDefaultsType {
     func bool(forKey defaultName: String) -> Bool
     func set(_ value: Bool, forKey defaultName: String)

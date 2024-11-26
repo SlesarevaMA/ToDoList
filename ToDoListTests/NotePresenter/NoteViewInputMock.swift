@@ -8,6 +8,7 @@
 @testable import ToDoList
 
 class NoteViewInputMock: NoteViewInput {
+    
     var currentText: String = ""
     
     var currentDescription: String = ""
@@ -16,5 +17,13 @@ class NoteViewInputMock: NoteViewInput {
     
     func configure(with model: ToDoList.NoteViewModel) {
         configureCalledCount += 1
+    }
+    
+    func setFocusOnTitle() {
+        
+    }
+    
+    func setFocusOnDescription() {
+        
     }
 }
