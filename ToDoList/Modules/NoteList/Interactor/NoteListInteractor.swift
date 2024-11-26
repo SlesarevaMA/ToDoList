@@ -5,7 +5,6 @@
 //  Created by Margarita Slesareva on 19.11.2024.
 //
 
-
 import Foundation
 
 
@@ -82,7 +81,8 @@ final class NoteListInteractorImpl: NoteListInteractor {
                         description: $0.body,
                         date: $0.date
                     )
-            })
+                }
+            )
 
             completion(.success(models))
         } catch {

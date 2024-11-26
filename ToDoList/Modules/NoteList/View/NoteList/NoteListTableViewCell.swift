@@ -8,10 +8,10 @@
 import UIKit
 import SnapKit
 
+
 protocol NoteListTableViewCellDelegate: AnyObject {
     func completeChanged(id: UUID, completed: Bool)
 }
-
 
 final class NoteListTableViewCell: UITableViewCell {
     weak var delegate: NoteListTableViewCellDelegate?

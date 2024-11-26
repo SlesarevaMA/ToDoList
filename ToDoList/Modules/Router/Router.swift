@@ -7,6 +7,7 @@
 
 import UIKit
 
+
 protocol Router: AnyObject {
     func showNoteList()
     func showNote(id: UUID?)

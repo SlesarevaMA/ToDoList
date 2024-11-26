@@ -6,9 +6,10 @@
 //
 
 import Testing
-@testable import ToDoList
 import Foundation
 import CoreData
+@testable import ToDoList
+
 
 struct NoteInteractorTests {
     private var noteInteractor: NoteInteractorImpl

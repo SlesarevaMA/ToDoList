@@ -6,6 +6,7 @@
 //
 
 import Foundation
+// Расставить пробелы после всех импортов
 
 protocol NoteInteractor: AnyObject {
     func saveChanges(for modelId: UUID?, title: String, description: String)

@@ -8,6 +8,7 @@
 import Foundation
 @testable import ToDoList
 
+
 class NoteListInteractorMock: NoteListInteractor {
     private(set) var getNotesCalledCount = 0
     private(set) var deleteNoteCalledCount = 0

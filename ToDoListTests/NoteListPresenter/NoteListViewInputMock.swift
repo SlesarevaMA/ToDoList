@@ -8,6 +8,7 @@
 
 @testable import ToDoList
 
+
 class NoteListViewInputMock: NoteListViewInput {
     private(set) var addNotesCalledCount = 0
     

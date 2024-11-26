@@ -7,6 +7,7 @@
 
 @testable import ToDoList
 
+
 class NoteViewInputMock: NoteViewInput {
     
     var currentText: String = ""

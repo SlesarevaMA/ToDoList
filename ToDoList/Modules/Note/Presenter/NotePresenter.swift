@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 protocol NoteViewOutput: AnyObject {
     func viewDidLoad()
     func viewWillDisappear()

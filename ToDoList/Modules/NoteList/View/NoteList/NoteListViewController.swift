@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 
+
 protocol NoteListViewInput: AnyObject {
     func addNotes(models: [NoteListViewModel])
 }
@@ -194,15 +195,15 @@ extension NoteListViewController: UITableViewDelegate {
             
             let thirdAction = UIAction(
                 title: "Удалить", image: UIImage(systemName: "trash"), attributes: .destructive
-            ) { [self] _ in
+            ) { _ in
                 let model = self.noteListModels[indexPath.row]
-                self.output.thirdActionTapped(id: model.id)
                 self.noteListModels.removeAll { note in
                     note.id == model.id
                 }
                 
-                centerBarButtonItem.title = "\(noteListModels.count) задач"
+                self.centerBarButtonItem.title = "\(self.noteListModels.count) задач"
                 tableView.reloadData()
+                self.output.thirdActionTapped(id: model.id)
             }
             
             return UIMenu(children: [firstAction, secondAction, thirdAction])

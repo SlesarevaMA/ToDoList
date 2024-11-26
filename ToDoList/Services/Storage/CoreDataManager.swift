@@ -7,6 +7,7 @@
 
 import CoreData
 
+
 protocol CoreDataManager: AnyObject {
     func save(_ saveClosure: @escaping (NSManagedObjectContext) -> Void) throws
     func read<T: NSFetchRequestResult, O>(

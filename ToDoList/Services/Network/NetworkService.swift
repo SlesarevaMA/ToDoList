@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 protocol NetworkService: AnyObject {
     func sendRequest<RequestModel: Decodable>(
         type: RequestModel.Type,
@@ -19,11 +20,11 @@ final class NetworkServiceImpl: NetworkService {
     private let jsonDecoder: JSONDecoder
     private var session: URLSession
 
-    init(jsonDecoder: JSONDecoder, session: URLSession = URLSession(configuration: .default)) {
+    init(jsonDecoder: JSONDecoder, session: URLSession = .shared) {
         self.jsonDecoder = jsonDecoder
-        jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
-        
         self.session = session
+        
+        jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
     }
     
     func sendRequest<RequestModel: Decodable>(
@@ -31,8 +32,6 @@ final class NetworkServiceImpl: NetworkService {
         request: Request,
         completion: @escaping (Result<RequestModel, RequestError>) -> (Void)
     ) {
-        let session = URLSession(configuration: .default)
-        
         let dataTask = session.dataTask(with: request.urlRequest) { data, response, error in
             guard (response as? HTTPURLResponse)?.statusCode == 200 else {
                 completion(.failure(.wrongStatusCode))

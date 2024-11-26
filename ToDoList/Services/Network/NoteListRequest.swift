@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 struct NoteListRequest: Request {
     var urlRequest: URLRequest {
         var urlComponents = URLComponents()

@@ -7,6 +7,7 @@
 
 import UIKit
 
+
 enum Color {
     static let accent: UIColor = .init(hex: 0xFED702)
     static let stroke: UIColor = .init(hex: 0x4D555E)
