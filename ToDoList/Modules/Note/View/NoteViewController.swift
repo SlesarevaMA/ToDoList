@@ -57,6 +57,7 @@ final class NoteViewController: UIViewController, NoteViewInput {
         addConstraints()
         configureViews()
         configureNavigationBar()
+        setDismissKeyboard()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -66,9 +67,31 @@ final class NoteViewController: UIViewController, NoteViewInput {
     }
     
     func configure(with model: NoteViewModel) {
-        titleTextView.text = model.title
         dateLabel.text = model.dateString
         descriptionTextView.text = model.description
+        
+        let attributedString = NSMutableAttributedString(string: model.title)
+        attributedString.addAttribute(
+            .font,
+            value: UIFont.boldSystemFont(ofSize: 34),
+            range: NSRange(location: 0, length: model.title.count)
+        )
+        
+        if model.completed {
+            attributedString.addAttribute(
+                .strikethroughStyle,
+                value: NSUnderlineStyle.single.rawValue,
+                range: NSRange(location: 0, length: model.title.count)
+            )
+            
+            titleTextView.attributedText = attributedString
+            titleTextView.textColor = Color.notActive
+            descriptionTextView.textColor = Color.notActive
+        } else {
+            titleTextView.attributedText = attributedString
+            titleTextView.textColor = .label
+            descriptionTextView.textColor = .label
+        }
     }
     
     private func addViews() {
@@ -87,7 +110,6 @@ final class NoteViewController: UIViewController, NoteViewInput {
         titleTextView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(Constants.smallVerticalSpacing)
             make.horizontalEdges.equalTo(view.snp.horizontalEdges).inset(Constants.horizontalMargin)
-            make.height.lessThanOrEqualTo(100)
         }
 
         dateLabel.snp.makeConstraints { make in
@@ -105,21 +127,32 @@ final class NoteViewController: UIViewController, NoteViewInput {
     private func configureViews() {
         view.backgroundColor = .systemBackground
         
-        titleTextView.textColor = .label
-        titleTextView.font = .boldSystemFont(ofSize: 34)
         titleTextView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        titleTextView.isScrollEnabled = false
+        titleTextView.sizeToFit()
 
-        dateLabel.textColor = Color.stroke
         dateLabel.font = .systemFont(ofSize: 16)
         
         descriptionTextView.textColor = .label
         descriptionTextView.font = .systemFont(ofSize: 16)
+        descriptionTextView.isScrollEnabled = false
+        descriptionTextView.sizeToFit()
     }
     
     private func configureNavigationBar() {
         navigationItem.largeTitleDisplayMode = .never
         navigationController?.navigationBar.tintColor = Color.accent
         navigationController?.setToolbarHidden(true, animated: false)
+    }
+    
+    private func setDismissKeyboard() {
+       let tap = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboardTouchOutside))
+       tap.cancelsTouchesInView = false
+       view.addGestureRecognizer(tap)
+    }
+
+    @objc private func dismissKeyboardTouchOutside() {
+       view.endEditing(true)
     }
 }
 

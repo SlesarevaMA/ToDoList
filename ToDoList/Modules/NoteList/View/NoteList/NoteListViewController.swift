@@ -47,8 +47,13 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        output.viewWillAppear()
         navigationController?.setToolbarHidden(false, animated: false)
+    }
+    
+    override func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
+        
+        output.viewIsAppearing()
     }
     
     func addNotes(models: [NoteListViewModel]) {
@@ -130,6 +135,12 @@ final class NoteListViewController: UIViewController, NoteListViewInput {
     }
 }
 
+extension NoteListViewController: NoteListTableViewCellDelegate {
+    func completeChanged(id: UUID, completed: Bool) {
+        output.completeChanged(id: id, completed: completed)
+    }
+}
+
 extension NoteListViewController: UISearchControllerDelegate, UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let searchText = searchController.searchBar.text else { return }
@@ -151,6 +162,7 @@ extension NoteListViewController: UITableViewDataSource {
         let cell: NoteListTableViewCell = tableView.dequeReusableCell(for: indexPath)
         let note = isFiltering() ? filteredData[indexPath.row] : noteListModels[indexPath.row]
         cell.configure(with: note)
+        cell.delegate = self
         
         return cell
     }

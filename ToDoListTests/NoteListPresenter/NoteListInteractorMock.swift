@@ -9,9 +9,9 @@ import Foundation
 @testable import ToDoList
 
 class NoteListInteractorMock: NoteListInteractor {
-    
     private(set) var getNotesCalledCount = 0
     private(set) var deleteNoteCalledCount = 0
+    private(set) var editNoteCalledCount = 0
     
     func getNotes(completion: @escaping (Result<[ToDoList.NoteModel], ToDoList.RequestError>) -> Void) {
         getNotesCalledCount += 1
@@ -22,5 +22,9 @@ class NoteListInteractorMock: NoteListInteractor {
     
     func deleteNote(id: UUID) {
         deleteNoteCalledCount += 1
+    }
+    
+    func editNote(for modelId: UUID, completed: Bool) {
+        editNoteCalledCount += 1
     }
 }

@@ -33,7 +33,7 @@ struct NoteListPresenterTests {
         // given
         
         // when
-        noteListPresenter.viewWillAppear()
+        noteListPresenter.viewIsAppearing()
         
         // then
         #expect(noteListInteractorMock.getNotesCalledCount == 1)
@@ -42,10 +42,23 @@ struct NoteListPresenterTests {
     @Test
     func viewWillApear_addNotesCalled() {
         // when
-        noteListPresenter.viewWillAppear()
+        noteListPresenter.viewIsAppearing()
         
         // then
         #expect(noteListViewInputMock.addNotesCalledCount == 1)
+    }
+    
+    @Test
+    func completeChanged_editNoteCalled() {
+        // given
+        let uuid = UUID()
+        let completed = true
+        
+        // when
+        noteListPresenter.completeChanged(id: uuid, completed: completed)
+        
+        // then
+        #expect(noteListInteractorMock.editNoteCalledCount == 1)
     }
     
     @Test

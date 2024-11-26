@@ -9,11 +9,13 @@ import UIKit
 import SnapKit
 
 protocol NoteListTableViewCellDelegate: AnyObject {
-
+    func completeChanged(id: UUID, completed: Bool)
 }
 
 
 final class NoteListTableViewCell: UITableViewCell {
+    weak var delegate: NoteListTableViewCellDelegate?
+    
     private let checkmarkButton = UIButton()
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
@@ -21,6 +23,7 @@ final class NoteListTableViewCell: UITableViewCell {
 
     private var id: UUID?
     private var completed: Bool?
+    private var titleString: String?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -41,7 +44,7 @@ final class NoteListTableViewCell: UITableViewCell {
     }
     
     func configure(with model: NoteListViewModel) {
-        titleLabel.text = model.title
+        titleString = model.title
         descriptionLabel.text = model.description
         dateLabel.text = model.dateString
 
@@ -55,9 +58,32 @@ final class NoteListTableViewCell: UITableViewCell {
         if completed {
             checkmarkButton.setImage(UIImage(systemName: "checkmark.circle"), for: .normal)
             checkmarkButton.tintColor = Color.accent
+            
+            guard let titleString else {
+                return
+            }
+            
+            let attributedString = NSMutableAttributedString(string: titleString)
+            attributedString.addAttribute(
+                .strikethroughStyle,
+                value: NSUnderlineStyle.single.rawValue,
+                range: NSRange(location: 0, length: titleString.count)
+            )
+            
+            titleLabel.attributedText = attributedString
+            titleLabel.textColor = Color.notActive
+            descriptionLabel.textColor = Color.notActive
         } else {
             checkmarkButton.setImage(UIImage(systemName: "circle"), for: .normal)
             checkmarkButton.tintColor = Color.stroke
+            
+            guard let titleString else {
+                return
+            }
+            
+            titleLabel.attributedText = NSMutableAttributedString(string: titleString)
+            titleLabel.textColor = .label
+            descriptionLabel.textColor = .label
         }
     }
 
@@ -101,10 +127,8 @@ final class NoteListTableViewCell: UITableViewCell {
     }
     
     private func configureViews() {
-        titleLabel.textColor = .label
         titleLabel.font = .boldSystemFont(ofSize: 16)
         
-        descriptionLabel.textColor = .label
         descriptionLabel.font = .systemFont(ofSize: 16)
         
         dateLabel.textColor = Color.stroke
@@ -117,6 +141,10 @@ final class NoteListTableViewCell: UITableViewCell {
         configureCheckmarkButton(completed: !(completed ?? true))
         
         completed?.toggle()
+        
+        if let completed, let id {
+            delegate?.completeChanged(id: id, completed: completed)
+        }
     }
 }
 

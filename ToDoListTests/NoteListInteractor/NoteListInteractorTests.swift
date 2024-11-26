@@ -51,6 +51,18 @@ struct NoteListInteractorTests {
         // then
         #expect(networkServiceMock.sendRequestCalledCount == 1)
     }
+    @Test
+    func editNote_saveCalled() {
+        // given
+        let uuid = UUID()
+        let completed = true
+        
+        // when
+        noteListInteractor.editNote(for: uuid, completed: completed)
+        
+        // then
+        #expect(coreDataManagerMock.saveCalledCount == 1)
+    }
     
     @Test
     func deleteNote_deleteCalled() {

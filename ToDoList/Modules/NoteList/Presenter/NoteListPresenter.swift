@@ -10,8 +10,9 @@ import Foundation
 
 
 protocol NoteListViewOutput: AnyObject {
-    func viewWillAppear()
+    func viewIsAppearing()
     func didTapCell(id: UUID)
+    func completeChanged(id: UUID, completed: Bool)
     func rightBarButtonItemTapped()
     
     func firstActionTapped(id: UUID)
@@ -55,7 +56,7 @@ final class NoteListPresenter {
 }
 
 extension NoteListPresenter: NoteListViewOutput {
-    func viewWillAppear() {
+    func viewIsAppearing() {
         presenterQueue.async {
             self.interactor.getNotes { [weak self] result in
                 guard let self else {
@@ -64,7 +65,8 @@ extension NoteListPresenter: NoteListViewOutput {
                 
                 switch result {
                 case .success(let noteModels):
-                    let viewModels = self.mapNoteListViewModels(noteModels)
+                    let noteModelsSorted = noteModels.sorted { $0.date > $1.date }
+                    let viewModels = self.mapNoteListViewModels(noteModelsSorted)
                     
                     mainQueue.async {
                         self.view?.addNotes(models: viewModels)
@@ -74,6 +76,10 @@ extension NoteListPresenter: NoteListViewOutput {
                 }
             }
         }
+    }
+    
+    func completeChanged(id: UUID, completed: Bool) {
+        interactor.editNote(for: id, completed: completed)
     }
     
     func rightBarButtonItemTapped() {
