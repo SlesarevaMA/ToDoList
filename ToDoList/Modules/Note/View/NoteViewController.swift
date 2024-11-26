@@ -55,12 +55,7 @@ final class NoteViewController: UIViewController, NoteViewInput {
         super.viewDidLoad()
         
         output.viewDidLoad()
-        
-        addViews()
-        configureViews()
-        addConstraints()
-        configureNavigationBar()
-        setDismissKeyboard()
+        setupUI()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -103,6 +98,50 @@ final class NoteViewController: UIViewController, NoteViewInput {
     
     func setFocusOnDescription() {
         descriptionTextView.becomeFirstResponder()
+    }
+    
+    private func setupUI() {
+        addViews()
+        configureViews()
+        addConstraints()
+        configureNavigationBar()
+        observeKeyboardChanges()
+    }
+    
+    private func observeKeyboardChanges() {
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        guard
+            let userInfo = notification.userInfo,
+            let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+        else {
+            return
+        }
+
+        let keyboardHeight = keyboardFrame.cgRectValue.height
+        let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+        
+        scrollView.contentInset = contentInsets
+        scrollView.scrollIndicatorInsets = contentInsets
+    }
+
+    @objc private func keyboardWillHide(notification: NSNotification) {
+        scrollView.contentInset = .zero
+        scrollView.scrollIndicatorInsets = .zero
     }
     
     private func addViews() {
@@ -154,6 +193,7 @@ final class NoteViewController: UIViewController, NoteViewInput {
         
         descriptionTextView.snp.makeConstraints { make in
             make.top.equalTo(dateLabel.snp.bottom).offset(Constants.verticalSpacing)
+            make.horizontalEdges.equalTo(titleTextView.snp.horizontalEdges)
             make.bottom.equalToSuperview()
         }
     }
@@ -162,16 +202,6 @@ final class NoteViewController: UIViewController, NoteViewInput {
         navigationItem.largeTitleDisplayMode = .never
         navigationController?.navigationBar.tintColor = Color.accent
         navigationController?.setToolbarHidden(true, animated: false)
-    }
-    
-    private func setDismissKeyboard() {
-       let tap = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboardTouchOutside))
-       tap.cancelsTouchesInView = false
-       view.addGestureRecognizer(tap)
-    }
-
-    @objc private func dismissKeyboardTouchOutside() {
-       view.endEditing(true)
     }
 }
 
